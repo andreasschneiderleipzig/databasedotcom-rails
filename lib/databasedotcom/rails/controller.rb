@@ -9,7 +9,7 @@ module Databasedotcom
             username = ENV["SALESFORCE_USERNAME"]
             password = ENV["SALESFORCE_PASSWORD"]
             #@dbdc_client = Databasedotcom::Client.new(config)
-            @dbdc_client = Databasedotcom::Client.new(nil)
+            @dbdc_client = Databasedotcom::Client.new({})
             @dbdc_client.authenticate(:username => username, :password => password)
           end
 
