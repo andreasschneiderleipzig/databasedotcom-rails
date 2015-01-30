@@ -4,13 +4,20 @@ module Databasedotcom
       module ClassMethods
         def dbdc_client
           unless @dbdc_client
-            #config = YAML.load_file(File.join(::Rails.root, 'config', 'databasedotcom.yml'))
-            #config = config.has_key?(::Rails.env) ? config[::Rails.env] : config
+            config =  begin
+                        config = YAML.load_file(File.join(::Rails.root, 'config', 'databasedotcom.yml'))
+                        config = config.has_key?(::Rails.env) ? config[::Rails.env] : config
+                      rescue
+                      end
+
             username = ENV["SALESFORCE_USERNAME"]
             password = ENV["SALESFORCE_PASSWORD"]
-            #@dbdc_client = Databasedotcom::Client.new(config)
-            @dbdc_client = Databasedotcom::Client.new({})
-            @dbdc_client.authenticate(:username => username, :password => password)
+            @dbdc_client = Databasedotcom::Client.new(config ? config : {})
+            if(ENV.key?('DATABASEDOTCOM_TOKEN') && ENV.key?('DATABASEDOTCOM_INSTANCE_URL'))
+              @dbdc_client.authenticate(token: ENV["DATABASEDOTCOM_TOKEN"], instance_url: ENV['DATABASEDOTCOM_INSTANCE_URL'])
+            else
+              @dbdc_client.authenticate(:username => username, :password => password)
+            end
           end
 
           @dbdc_client
